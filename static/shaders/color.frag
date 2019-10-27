@@ -20,10 +20,10 @@ void main(){
     yColor = ( vertexPosition.y + 1.0 ) / 2.0 * 1.0;
     zColor = ( vertexPosition.z + 1.0 ) / 2.0 * 1.0;
 
-    //xColor = vertexPosition.x;
-    //yColor = vertexPosition.y;
-    //zColor = vertexPosition.z;
+    xColor = vertexPosition.x;
+    yColor = vertexPosition.y;
+    zColor = vertexPosition.z;
 
-    color = vec4( xColor , yColor , zColor , 1.0 );
+    color = tint * vec4( xColor , yColor , zColor , 1.0 );
     //color = tint * vertexColor; // Send our interpolated color
 }

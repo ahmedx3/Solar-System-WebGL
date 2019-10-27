@@ -9913,7 +9913,7 @@ function ColoredSphere(gl, verticalResolution, horizontalResolution) {
 
 
   var mesh = createMesh(gl);
-  var radius = 2;
+  var radius = 1;
   var vertexPositionData = [];
   var normalData = [];
   var textureCoordData = [];
@@ -9998,7 +9998,7 @@ function () {
     this.orthographicHeight = 10;
     this.aspectRatio = 1;
     this.near = 0.01;
-    this.far = 1000;
+    this.far = 10000;
   }
 
   Object.defineProperty(Camera.prototype, "ViewMatrix", {
@@ -10242,19 +10242,19 @@ function (_super) {
     var _a; // These shaders take 2 uniform: MVP for 3D transformation and Tint for modifying colors
 
 
-    this.game.loader.load((_a = {}, _a["color.vert"] = {
-      url: 'shaders/color.vert',
+    this.game.loader.load((_a = {}, _a["sphere.vert"] = {
+      url: 'shaders/sphere.vert',
       type: 'text'
-    }, _a["color.frag"] = {
-      url: 'shaders/color.frag',
+    }, _a["sphere.frag"] = {
+      url: 'shaders/sphere.frag',
       type: 'text'
     }, _a));
   };
 
   SphereScene.prototype.start = function () {
     this.program = new shader_program_1.default(this.gl);
-    this.program.attach(this.game.loader.resources["color.vert"], this.gl.VERTEX_SHADER);
-    this.program.attach(this.game.loader.resources["color.frag"], this.gl.FRAGMENT_SHADER);
+    this.program.attach(this.game.loader.resources["sphere.vert"], this.gl.VERTEX_SHADER);
+    this.program.attach(this.game.loader.resources["sphere.frag"], this.gl.FRAGMENT_SHADER);
     this.program.link(); // Create a colored rectangle using our new Mesh class
 
     this.mesh = MeshUtils.ColoredSphere(this.gl, this.verticalResolution, this.horizontalResolution);
@@ -10494,9 +10494,10 @@ function (_super) {
     this.camera.aspectRatio = this.gl.drawingBufferWidth / this.gl.drawingBufferHeight;
     this.controller = new fly_camera_controller_1.default(this.camera, this.game.input);
     this.controller.movementSensitivity = 0.5;
-    this.gl.enable(this.gl.CULL_FACE);
+    /*this.gl.enable(this.gl.CULL_FACE);
     this.gl.cullFace(this.gl.BACK);
-    this.gl.frontFace(this.gl.CCW);
+    this.gl.frontFace(this.gl.CCW);*/
+
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.setupControls();
@@ -10514,10 +10515,63 @@ function (_super) {
   SolarSystemScene.prototype.drawSystem = function (parent, system) {
     // TODO: Modify this function to draw the whole solar system
     var matPlanet = gl_matrix_1.mat4.clone(parent);
+    gl_matrix_1.mat4.translate(matPlanet, matPlanet, [0 + Math.cos(this.time * system.rotationSpeedAroundParent) * system.distanceFromParent, 0, 0 + Math.sin(this.time * system.rotationSpeedAroundParent) * system.distanceFromParent]); //X := originX + cos(angle)*radius
+
     gl_matrix_1.mat4.rotateY(matPlanet, matPlanet, this.time * system.rotationSpeedAroundSelf);
     gl_matrix_1.mat4.scale(matPlanet, matPlanet, [system.scale, system.scale, system.scale]);
     this.drawSphere(matPlanet, system.tint);
-    if (system.children) console.log("This object has " + system.children.length + " " + (system.children.length == 1 ? "child" : "children"));
+    var childPos = gl_matrix_1.vec3.create();
+    var grandChildPos = gl_matrix_1.vec3.create();
+
+    for (var i = 0; i < system.children.length; i++) {
+      var child = system.children[i];
+      var matChild = gl_matrix_1.mat4.clone(parent);
+      gl_matrix_1.mat4.translate(matChild, matChild, [0 + Math.cos(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent, 0, 0 + Math.sin(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent]); //X := originX + cos(angle)*radius
+
+      gl_matrix_1.mat4.rotateY(matChild, matChild, this.time * child.rotationSpeedAroundSelf);
+      gl_matrix_1.mat4.scale(matChild, matChild, [child.scale, child.scale, child.scale]);
+      childPos[0] = 0 + Math.cos(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
+      childPos[1] = 0;
+      childPos[2] = 0 + Math.sin(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
+      console.log(childPos);
+      this.drawSphere(matChild, child.tint);
+
+      if (child.children != undefined) {
+        for (var j = 0; j < child.children.length; j++) {
+          var grandChild = child.children[j];
+          var matGrandChild = gl_matrix_1.mat4.clone(parent);
+          gl_matrix_1.mat4.translate(matGrandChild, matGrandChild, [childPos[0] + Math.cos(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent, 0, childPos[2] + Math.sin(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent]); //X := originX + cos(angle)*radius
+
+          gl_matrix_1.mat4.rotateY(matGrandChild, matGrandChild, this.time * grandChild.rotationSpeedAroundSelf);
+          gl_matrix_1.mat4.scale(matGrandChild, matGrandChild, [grandChild.scale, grandChild.scale, grandChild.scale]);
+          grandChildPos[0] = childPos[0] + Math.cos(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
+          grandChildPos[1] = 0;
+          grandChildPos[2] = childPos[2] + Math.sin(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
+          this.drawSphere(matGrandChild, grandChild.tint);
+
+          if (grandChild.children != undefined) {
+            for (var k = 0; k < grandChild.children.length; k++) {
+              var grandGrandChild = grandChild.children[k];
+              var matGrandGrandChild = gl_matrix_1.mat4.clone(parent);
+              gl_matrix_1.mat4.translate(matGrandGrandChild, matGrandGrandChild, [grandChildPos[0] + Math.cos(this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent, 0, grandChildPos[2] + Math.sin(this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent]); //X := originX + cos(angle)*radius
+
+              gl_matrix_1.mat4.rotateY(matGrandGrandChild, matGrandGrandChild, this.time * grandGrandChild.rotationSpeedAroundSelf);
+              gl_matrix_1.mat4.scale(matGrandGrandChild, matGrandGrandChild, [grandGrandChild.scale, grandGrandChild.scale, grandGrandChild.scale]);
+              this.drawSphere(matGrandGrandChild, grandGrandChild.tint);
+            }
+          }
+        }
+      } //}
+
+      /*let matChild = mat4.clone(parent);
+      let child = system.children[0];
+      mat4.scale(matChild , matChild , [2, 50 , 2]);
+      this.drawSphere(matChild, child.tint);*/
+
+
+      if (system.children) console.log("This object has " + system.children.length + " " + (system.children.length == 1 ? "child" : "children"));
+    } // Given an MVP and a tint matrix, it draws a sphere
+
   }; // Given an MVP and a tint matrix, it draws a sphere
 
 
@@ -10606,7 +10660,8 @@ function (_super) {
     addLabel(SystemDiv, "Solar System");
     addSelect(SystemDiv, Object.keys(this.systems), this.currentSystem, function (value) {
       _this.currentSystem = value;
-    });
+    }); //default value "this.currentSystem=value"
+
     controls.appendChild(SystemDiv);
     var TimeDiv = document.createElement('div');
     TimeDiv.className = "control-row";
@@ -10691,7 +10746,7 @@ var scenes = {
   "Sphere": _01_Sphere_1.default,
   "Solar-System": _02_SolarSystem_1.default
 };
-var initialScene = "Sphere"; // Then we add those scenes to the game object and ask it to start the initial scene
+var initialScene = "Solar-System"; // Then we add those scenes to the game object and ask it to start the initial scene
 
 game.addScenes(scenes);
 game.startScene(initialScene); // Here we setup a selector element to switch scenes from the webpage
@@ -10737,7 +10792,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54286" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64116" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

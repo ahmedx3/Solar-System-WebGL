@@ -185,7 +185,7 @@ export function ColoredSphere(gl: WebGL2RenderingContext, verticalResolution: nu
     // TODO: Create a colored sphere mesh and return it
     let mesh = createMesh(gl);
 
-    let radius = 2;
+    let radius = 1;
 
     let vertexPositionData = [];
     let normalData = [];

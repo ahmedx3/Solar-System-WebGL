@@ -40,15 +40,15 @@ export default class SphereScene extends Scene {
     public load(): void {
         // These shaders take 2 uniform: MVP for 3D transformation and Tint for modifying colors
         this.game.loader.load({
-            ["color.vert"]:{url:'shaders/color.vert', type:'text'},
-            ["color.frag"]:{url:'shaders/color.frag', type:'text'}
+            ["sphere.vert"]:{url:'shaders/sphere.vert', type:'text'},
+            ["sphere.frag"]:{url:'shaders/sphere.frag', type:'text'}
         });
     } 
     
     public start(): void {
         this.program = new ShaderProgram(this.gl);
-        this.program.attach(this.game.loader.resources["color.vert"], this.gl.VERTEX_SHADER);
-        this.program.attach(this.game.loader.resources["color.frag"], this.gl.FRAGMENT_SHADER);
+        this.program.attach(this.game.loader.resources["sphere.vert"], this.gl.VERTEX_SHADER);
+        this.program.attach(this.game.loader.resources["sphere.frag"], this.gl.FRAGMENT_SHADER);
         this.program.link();
 
         // Create a colored rectangle using our new Mesh class
