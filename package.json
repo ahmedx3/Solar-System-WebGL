@@ -16,6 +16,7 @@
   "devDependencies": {
     "@types/gl-matrix": "^2.4.5",
     "@types/webgl2": "0.0.5",
+    "blink-diff": "^1.0.13",
     "parcel-bundler": "^1.12.4",
     "parcel-plugin-static-files-copy": "^2.2.1",
     "sass": "^1.23.0",

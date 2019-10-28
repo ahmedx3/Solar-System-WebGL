@@ -89,8 +89,8 @@ export default class SolarSystemScene extends Scene {
         // TODO: Modify this function to draw the whole solar system
         let matPlanet = mat4.clone(parent);
 
-        mat4.translate(matPlanet , matPlanet , [0 + Math.cos(this.time* system.rotationSpeedAroundParent)*system.distanceFromParent , 0 , 0 + Math.sin(this.time*system.rotationSpeedAroundParent)*system.distanceFromParent])  //X := originX + cos(angle)*radius
-        mat4.rotateY(matPlanet, matPlanet, this.time*system.rotationSpeedAroundSelf);
+        mat4.translate(matPlanet , matPlanet , [0 + Math.cos(-this.time* system.rotationSpeedAroundParent)*system.distanceFromParent , 0 , 0 + Math.sin(-this.time*system.rotationSpeedAroundParent)*system.distanceFromParent])  //X := originX + cos(angle)*radius
+        mat4.rotateY(matPlanet, matPlanet, -this.time*system.rotationSpeedAroundSelf);
         mat4.scale(matPlanet, matPlanet, [system.scale, system.scale, system.scale]);
 
         this.drawSphere(matPlanet, system.tint);
@@ -104,14 +104,14 @@ export default class SolarSystemScene extends Scene {
 
             let matChild = mat4.clone(parent);
 
-            mat4.translate(matChild , matChild , [0 + Math.cos(this.time* child.rotationSpeedAroundParent)*child.distanceFromParent , 0 , 0 + Math.sin(this.time*child.rotationSpeedAroundParent)*child.distanceFromParent])  //X := originX + cos(angle)*radius
+            mat4.translate(matChild , matChild , [0 + Math.cos(-this.time* child.rotationSpeedAroundParent)*child.distanceFromParent , 0 , 0 + Math.sin(-this.time*child.rotationSpeedAroundParent)*child.distanceFromParent])  //X := originX + cos(angle)*radius
             mat4.rotateY(matChild, matChild, this.time*child.rotationSpeedAroundSelf);
             mat4.scale(matChild, matChild, [child.scale, child.scale, child.scale]);
 
             
-            childPos[0] = 0 + Math.cos(this.time* child.rotationSpeedAroundParent)*child.distanceFromParent;
+            childPos[0] = 0 + Math.cos(-this.time* child.rotationSpeedAroundParent)*child.distanceFromParent;
             childPos[1] = 0 ;
-            childPos[2] = 0 + Math.sin(this.time*child.rotationSpeedAroundParent)*child.distanceFromParent;
+            childPos[2] = 0 + Math.sin(-this.time*child.rotationSpeedAroundParent)*child.distanceFromParent;
 
             console.log(childPos);
 
@@ -125,13 +125,13 @@ export default class SolarSystemScene extends Scene {
     
                     let matGrandChild = mat4.clone(parent);
     
-                    mat4.translate(matGrandChild , matGrandChild , [childPos[0] + Math.cos(this.time* grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent , 0 , childPos[2] + Math.sin(this.time*grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent]);  //X := originX + cos(angle)*radius
+                    mat4.translate(matGrandChild , matGrandChild , [childPos[0] + Math.cos(-this.time* grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent , 0 , childPos[2] + Math.sin(-this.time*grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent]);  //X := originX + cos(angle)*radius
                     mat4.rotateY(matGrandChild, matGrandChild, this.time*grandChild.rotationSpeedAroundSelf);
                     mat4.scale(matGrandChild, matGrandChild, [grandChild.scale, grandChild.scale, grandChild.scale]);
         
-                    grandChildPos[0] = childPos[0] + Math.cos(this.time* grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent;
+                    grandChildPos[0] = childPos[0] + Math.cos(-this.time* grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent;
                     grandChildPos[1] = 0 ;
-                    grandChildPos[2] = childPos[2] + Math.sin(this.time*grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent;
+                    grandChildPos[2] = childPos[2] + Math.sin(-this.time*grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent;
 
                     this.drawSphere(matGrandChild, grandChild.tint);
                     
@@ -144,7 +144,7 @@ export default class SolarSystemScene extends Scene {
 
                             let matGrandGrandChild = mat4.clone(parent);
 
-                            mat4.translate(matGrandGrandChild , matGrandGrandChild , [grandChildPos[0] + (Math.cos(this.time* grandGrandChild.rotationSpeedAroundParent)*grandGrandChild.distanceFromParent ), 0 , grandChildPos[2] + ( Math.sin(this.time*grandGrandChild.rotationSpeedAroundParent)*grandGrandChild.distanceFromParent) ]); //X := originX + cos(angle)*radius
+                            mat4.translate(matGrandGrandChild , matGrandGrandChild , [grandChildPos[0] + (Math.cos(-this.time* grandGrandChild.rotationSpeedAroundParent)*grandGrandChild.distanceFromParent ), 0 , grandChildPos[2] + ( Math.sin(-this.time*grandGrandChild.rotationSpeedAroundParent)*grandGrandChild.distanceFromParent) ]); //X := originX + cos(angle)*radius
                             mat4.rotateY(matGrandGrandChild, matGrandGrandChild, this.time*grandGrandChild.rotationSpeedAroundSelf);
                             mat4.scale(matGrandGrandChild, matGrandGrandChild, [grandGrandChild.scale, grandGrandChild.scale, grandGrandChild.scale]);
 
@@ -157,11 +157,6 @@ export default class SolarSystemScene extends Scene {
             
         //}
 
-        /*let matChild = mat4.clone(parent);
-        let child = system.children[0];
-        mat4.scale(matChild , matChild , [2, 50 , 2]);
-        this.drawSphere(matChild, child.tint);*/
-        
 
         if(system.children) 
             console.log(`This object has ${system.children.length} ${system.children.length==1?"child":"children"}`);

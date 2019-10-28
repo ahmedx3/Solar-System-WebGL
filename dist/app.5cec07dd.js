@@ -10515,9 +10515,9 @@ function (_super) {
   SolarSystemScene.prototype.drawSystem = function (parent, system) {
     // TODO: Modify this function to draw the whole solar system
     var matPlanet = gl_matrix_1.mat4.clone(parent);
-    gl_matrix_1.mat4.translate(matPlanet, matPlanet, [0 + Math.cos(this.time * system.rotationSpeedAroundParent) * system.distanceFromParent, 0, 0 + Math.sin(this.time * system.rotationSpeedAroundParent) * system.distanceFromParent]); //X := originX + cos(angle)*radius
+    gl_matrix_1.mat4.translate(matPlanet, matPlanet, [0 + Math.cos(-this.time * system.rotationSpeedAroundParent) * system.distanceFromParent, 0, 0 + Math.sin(-this.time * system.rotationSpeedAroundParent) * system.distanceFromParent]); //X := originX + cos(angle)*radius
 
-    gl_matrix_1.mat4.rotateY(matPlanet, matPlanet, this.time * system.rotationSpeedAroundSelf);
+    gl_matrix_1.mat4.rotateY(matPlanet, matPlanet, -this.time * system.rotationSpeedAroundSelf);
     gl_matrix_1.mat4.scale(matPlanet, matPlanet, [system.scale, system.scale, system.scale]);
     this.drawSphere(matPlanet, system.tint);
     var childPos = gl_matrix_1.vec3.create();
@@ -10526,13 +10526,13 @@ function (_super) {
     for (var i = 0; i < system.children.length; i++) {
       var child = system.children[i];
       var matChild = gl_matrix_1.mat4.clone(parent);
-      gl_matrix_1.mat4.translate(matChild, matChild, [0 + Math.cos(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent, 0, 0 + Math.sin(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent]); //X := originX + cos(angle)*radius
+      gl_matrix_1.mat4.translate(matChild, matChild, [0 + Math.cos(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent, 0, 0 + Math.sin(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent]); //X := originX + cos(angle)*radius
 
       gl_matrix_1.mat4.rotateY(matChild, matChild, this.time * child.rotationSpeedAroundSelf);
       gl_matrix_1.mat4.scale(matChild, matChild, [child.scale, child.scale, child.scale]);
-      childPos[0] = 0 + Math.cos(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
+      childPos[0] = 0 + Math.cos(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
       childPos[1] = 0;
-      childPos[2] = 0 + Math.sin(this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
+      childPos[2] = 0 + Math.sin(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
       console.log(childPos);
       this.drawSphere(matChild, child.tint);
 
@@ -10540,20 +10540,20 @@ function (_super) {
         for (var j = 0; j < child.children.length; j++) {
           var grandChild = child.children[j];
           var matGrandChild = gl_matrix_1.mat4.clone(parent);
-          gl_matrix_1.mat4.translate(matGrandChild, matGrandChild, [childPos[0] + Math.cos(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent, 0, childPos[2] + Math.sin(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent]); //X := originX + cos(angle)*radius
+          gl_matrix_1.mat4.translate(matGrandChild, matGrandChild, [childPos[0] + Math.cos(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent, 0, childPos[2] + Math.sin(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent]); //X := originX + cos(angle)*radius
 
           gl_matrix_1.mat4.rotateY(matGrandChild, matGrandChild, this.time * grandChild.rotationSpeedAroundSelf);
           gl_matrix_1.mat4.scale(matGrandChild, matGrandChild, [grandChild.scale, grandChild.scale, grandChild.scale]);
-          grandChildPos[0] = childPos[0] + Math.cos(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
+          grandChildPos[0] = childPos[0] + Math.cos(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
           grandChildPos[1] = 0;
-          grandChildPos[2] = childPos[2] + Math.sin(this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
+          grandChildPos[2] = childPos[2] + Math.sin(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
           this.drawSphere(matGrandChild, grandChild.tint);
 
           if (grandChild.children != undefined) {
             for (var k = 0; k < grandChild.children.length; k++) {
               var grandGrandChild = grandChild.children[k];
               var matGrandGrandChild = gl_matrix_1.mat4.clone(parent);
-              gl_matrix_1.mat4.translate(matGrandGrandChild, matGrandGrandChild, [grandChildPos[0] + Math.cos(this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent, 0, grandChildPos[2] + Math.sin(this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent]); //X := originX + cos(angle)*radius
+              gl_matrix_1.mat4.translate(matGrandGrandChild, matGrandGrandChild, [grandChildPos[0] + Math.cos(-this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent, 0, grandChildPos[2] + Math.sin(-this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent]); //X := originX + cos(angle)*radius
 
               gl_matrix_1.mat4.rotateY(matGrandGrandChild, matGrandGrandChild, this.time * grandGrandChild.rotationSpeedAroundSelf);
               gl_matrix_1.mat4.scale(matGrandGrandChild, matGrandGrandChild, [grandGrandChild.scale, grandGrandChild.scale, grandGrandChild.scale]);
@@ -10562,11 +10562,6 @@ function (_super) {
           }
         }
       } //}
-
-      /*let matChild = mat4.clone(parent);
-      let child = system.children[0];
-      mat4.scale(matChild , matChild , [2, 50 , 2]);
-      this.drawSphere(matChild, child.tint);*/
 
 
       if (system.children) console.log("This object has " + system.children.length + " " + (system.children.length == 1 ? "child" : "children"));
@@ -10792,7 +10787,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64116" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64882" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
