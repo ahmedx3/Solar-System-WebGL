@@ -14,7 +14,7 @@ const scenes = {
     "Sphere": SphereScene,
     "Solar-System": SolarSystemScene
 };
-const initialScene = "Solar-System";
+const initialScene = "Sphere";
 
 // Then we add those scenes to the game object and ask it to start the initial scene
 game.addScenes(scenes);

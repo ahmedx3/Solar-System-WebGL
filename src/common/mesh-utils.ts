@@ -181,25 +181,23 @@ export function LoadOBJMesh(gl: WebGL2RenderingContext, data: string){
     return mesh;
 }
 
-export function ColoredSphere(gl: WebGL2RenderingContext, verticalResolution: number=32, horizontalResolution: number=32): Mesh{
+export function ColoredSphere(gl: WebGL2RenderingContext, horizontalResolution: number=32, verticalResolution: number=32): Mesh{
     // TODO: Create a colored sphere mesh and return it
     let mesh = createMesh(gl);
 
     let radius = 1;
 
     let vertexPositionData = [];
-    let normalData = [];
-    let textureCoordData = [];
     let indexData = [];
 
-    // Calculate sphere vertex positions, normals, and texture coordinates.
+    // Calculate sphere vertex positions
     for (let latNumber = 0; latNumber <= horizontalResolution; ++latNumber) {
-      let theta = latNumber * Math.PI / horizontalResolution;
+      let theta = latNumber * Math.PI / horizontalResolution;                   //half of sphere
       let sinTheta = Math.sin(theta);
       let cosTheta = Math.cos(theta);
 
       for (let longNumber = 0; longNumber <= verticalResolution; ++longNumber) {
-        let phi = longNumber * 2 * Math.PI / verticalResolution;
+        let phi = longNumber * 2 * Math.PI / verticalResolution;                //full sphere
         let sinPhi = Math.sin(phi);
         let cosPhi = Math.cos(phi);
 
@@ -207,19 +205,10 @@ export function ColoredSphere(gl: WebGL2RenderingContext, verticalResolution: nu
         let y = cosTheta;
         let z = sinPhi * sinTheta;
 
-        let u = 1 - (longNumber / verticalResolution);
-        let v = 1 - (latNumber / horizontalResolution);
-
         vertexPositionData.push(radius * x);
         vertexPositionData.push(radius * y);
         vertexPositionData.push(radius * z);
 
-        normalData.push(x);
-        normalData.push(y);
-        normalData.push(z);
-
-        textureCoordData.push(u);
-        textureCoordData.push(v);
       }
     }
 
@@ -240,20 +229,9 @@ export function ColoredSphere(gl: WebGL2RenderingContext, verticalResolution: nu
     }
 
     let vertexPositionDataFinal = new Float32Array(vertexPositionData);
-    let normalDataFinal = new Float32Array(normalData);
-    let textureCoordDataFinal = new Float32Array(textureCoordData);
     let indexDataFinal = new Uint16Array(indexData);
 
     mesh.setBufferData("positions" , vertexPositionDataFinal , gl.STATIC_DRAW);
-
-    let colorArray = [];
-    for (let i = 0; i < vertexPositionDataFinal.length; i++) {
-        colorArray.push(BLUE);
-    }
-
-    let colorArrayFinal = new Uint8Array(colorArray);
-
-    //mesh.setBufferData("colors", colorArrayFinal, gl.STATIC_DRAW);
 
     mesh.setElementsData(indexDataFinal , gl.STATIC_DRAW);
 

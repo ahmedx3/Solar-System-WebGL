@@ -9902,45 +9902,38 @@ function LoadOBJMesh(gl, data) {
 
 exports.LoadOBJMesh = LoadOBJMesh;
 
-function ColoredSphere(gl, verticalResolution, horizontalResolution) {
-  if (verticalResolution === void 0) {
-    verticalResolution = 32;
-  }
-
+function ColoredSphere(gl, horizontalResolution, verticalResolution) {
   if (horizontalResolution === void 0) {
     horizontalResolution = 32;
+  }
+
+  if (verticalResolution === void 0) {
+    verticalResolution = 32;
   } // TODO: Create a colored sphere mesh and return it
 
 
   var mesh = createMesh(gl);
   var radius = 1;
   var vertexPositionData = [];
-  var normalData = [];
-  var textureCoordData = [];
-  var indexData = []; // Calculate sphere vertex positions, normals, and texture coordinates.
+  var indexData = []; // Calculate sphere vertex positions
 
   for (var latNumber = 0; latNumber <= horizontalResolution; ++latNumber) {
-    var theta = latNumber * Math.PI / horizontalResolution;
+    var theta = latNumber * Math.PI / horizontalResolution; //half of sphere
+
     var sinTheta = Math.sin(theta);
     var cosTheta = Math.cos(theta);
 
     for (var longNumber = 0; longNumber <= verticalResolution; ++longNumber) {
-      var phi = longNumber * 2 * Math.PI / verticalResolution;
+      var phi = longNumber * 2 * Math.PI / verticalResolution; //full sphere
+
       var sinPhi = Math.sin(phi);
       var cosPhi = Math.cos(phi);
       var x = cosPhi * sinTheta;
       var y = cosTheta;
       var z = sinPhi * sinTheta;
-      var u = 1 - longNumber / verticalResolution;
-      var v = 1 - latNumber / horizontalResolution;
       vertexPositionData.push(radius * x);
       vertexPositionData.push(radius * y);
       vertexPositionData.push(radius * z);
-      normalData.push(x);
-      normalData.push(y);
-      normalData.push(z);
-      textureCoordData.push(u);
-      textureCoordData.push(v);
     }
   } // Calculate sphere indices.
 
@@ -9959,18 +9952,8 @@ function ColoredSphere(gl, verticalResolution, horizontalResolution) {
   }
 
   var vertexPositionDataFinal = new Float32Array(vertexPositionData);
-  var normalDataFinal = new Float32Array(normalData);
-  var textureCoordDataFinal = new Float32Array(textureCoordData);
   var indexDataFinal = new Uint16Array(indexData);
   mesh.setBufferData("positions", vertexPositionDataFinal, gl.STATIC_DRAW);
-  var colorArray = [];
-
-  for (var i = 0; i < vertexPositionDataFinal.length; i++) {
-    colorArray.push(BLUE);
-  }
-
-  var colorArrayFinal = new Uint8Array(colorArray); //mesh.setBufferData("colors", colorArrayFinal, gl.STATIC_DRAW);
-
   mesh.setElementsData(indexDataFinal, gl.STATIC_DRAW);
   return mesh;
 }
@@ -10265,9 +10248,10 @@ function (_super) {
     this.camera.aspectRatio = this.gl.drawingBufferWidth / this.gl.drawingBufferHeight;
     this.controller = new fly_camera_controller_1.default(this.camera, this.game.input);
     this.controller.movementSensitivity = 0.005;
-    this.gl.enable(this.gl.CULL_FACE);
+    /*this.gl.enable(this.gl.CULL_FACE);
     this.gl.cullFace(this.gl.BACK);
-    this.gl.frontFace(this.gl.CCW);
+    this.gl.frontFace(this.gl.CCW);*/
+
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
     this.setupControls();
@@ -10741,7 +10725,7 @@ var scenes = {
   "Sphere": _01_Sphere_1.default,
   "Solar-System": _02_SolarSystem_1.default
 };
-var initialScene = "Solar-System"; // Then we add those scenes to the game object and ask it to start the initial scene
+var initialScene = "Sphere"; // Then we add those scenes to the game object and ask it to start the initial scene
 
 game.addScenes(scenes);
 game.startScene(initialScene); // Here we setup a selector element to switch scenes from the webpage
@@ -10787,7 +10771,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "64882" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49368" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

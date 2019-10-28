@@ -64,9 +64,9 @@ export default class SphereScene extends Scene {
         this.controller = new FlyCameraController(this.camera, this.game.input);
         this.controller.movementSensitivity = 0.005;
 
-        this.gl.enable(this.gl.CULL_FACE);
+        /*this.gl.enable(this.gl.CULL_FACE);
         this.gl.cullFace(this.gl.BACK);
-        this.gl.frontFace(this.gl.CCW);
+        this.gl.frontFace(this.gl.CCW);*/
 
         this.gl.enable(this.gl.DEPTH_TEST);
         this.gl.depthFunc(this.gl.LEQUAL);
