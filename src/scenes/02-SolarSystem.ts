@@ -90,77 +90,22 @@ export default class SolarSystemScene extends Scene {
         let matPlanet = mat4.clone(parent);
 
         mat4.translate(matPlanet , matPlanet , [0 + Math.cos(-this.time* system.rotationSpeedAroundParent)*system.distanceFromParent , 0 , 0 + Math.sin(-this.time*system.rotationSpeedAroundParent)*system.distanceFromParent])  //X := originX + cos(angle)*radius
+        
+        if(system.children)
+        {
+            for(let i = 0 ; i < system.children.length ; i++)
+                this.drawSystem(matPlanet , system.children[i]);
+        }
+        
         mat4.rotateY(matPlanet, matPlanet, this.time*system.rotationSpeedAroundSelf);
         mat4.scale(matPlanet, matPlanet, [system.scale, system.scale, system.scale]);
 
         this.drawSphere(matPlanet, system.tint);
 
-        let childPos = vec3.create();
-        let grandChildPos = vec3.create();
-
-        for(let i = 0 ; i < system.children.length ; i++)
-        {
-            let child = system.children[i];
-
-            let matChild = mat4.clone(parent);
-
-            mat4.translate(matChild , matChild , [0 + Math.cos(-this.time* child.rotationSpeedAroundParent)*child.distanceFromParent , 0 , 0 + Math.sin(-this.time*child.rotationSpeedAroundParent)*child.distanceFromParent])  //X := originX + cos(angle)*radius
-            mat4.rotateY(matChild, matChild, this.time*child.rotationSpeedAroundSelf);
-            mat4.scale(matChild, matChild, [child.scale, child.scale, child.scale]);
-
-            
-            childPos[0] = 0 + Math.cos(-this.time* child.rotationSpeedAroundParent)*child.distanceFromParent;
-            childPos[1] = 0 ;
-            childPos[2] = 0 + Math.sin(-this.time*child.rotationSpeedAroundParent)*child.distanceFromParent;
-
-            //console.log(childPos);
-
-            this.drawSphere(matChild, child.tint);
-
-            if(child.children != undefined)
-            {
-                for(let j = 0 ; j < child.children.length ; j++)
-                {
-                    let grandChild = child.children[j];
-    
-                    let matGrandChild = mat4.clone(parent);
-    
-                    mat4.translate(matGrandChild , matGrandChild , [childPos[0] + Math.cos(-this.time* grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent , 0 , childPos[2] + Math.sin(-this.time*grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent]);  //X := originX + cos(angle)*radius
-                    mat4.rotateY(matGrandChild, matGrandChild, this.time*grandChild.rotationSpeedAroundSelf);
-                    mat4.scale(matGrandChild, matGrandChild, [grandChild.scale, grandChild.scale, grandChild.scale]);
-        
-                    grandChildPos[0] = childPos[0] + Math.cos(-this.time* grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent;
-                    grandChildPos[1] = 0 ;
-                    grandChildPos[2] = childPos[2] + Math.sin(-this.time*grandChild.rotationSpeedAroundParent)*grandChild.distanceFromParent;
-
-                    this.drawSphere(matGrandChild, grandChild.tint);
-                    
-
-                    if (grandChild.children != undefined)
-                    {
-                        for(let k = 0 ; k < grandChild.children.length ; k++)
-                        {
-                            let grandGrandChild = grandChild.children[k];
-
-                            let matGrandGrandChild = mat4.clone(parent);
-
-                            mat4.translate(matGrandGrandChild , matGrandGrandChild , [grandChildPos[0] + (Math.cos(-this.time* grandGrandChild.rotationSpeedAroundParent)*grandGrandChild.distanceFromParent ), 0 , grandChildPos[2] + ( Math.sin(-this.time*grandGrandChild.rotationSpeedAroundParent)*grandGrandChild.distanceFromParent) ]); //X := originX + cos(angle)*radius
-                            mat4.rotateY(matGrandGrandChild, matGrandGrandChild, this.time*grandGrandChild.rotationSpeedAroundSelf);
-                            mat4.scale(matGrandGrandChild, matGrandGrandChild, [grandGrandChild.scale, grandGrandChild.scale, grandGrandChild.scale]);
-
-                            this.drawSphere(matGrandGrandChild, grandGrandChild.tint);
-                        }
-                        
-                    }
-                }
-            }
-            
-        //}
-
-
         if(system.children) 
             console.log(`This object has ${system.children.length} ${system.children.length==1?"child":"children"}`);
-    }
+    
+}
 
     // Given an MVP and a tint matrix, it draws a sphere
     private drawSphere(MVP: mat4, tint: ArrayLike<number>) {

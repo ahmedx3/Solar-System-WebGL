@@ -9915,7 +9915,7 @@ function ColoredSphere(gl, horizontalResolution, verticalResolution) {
   var mesh = createMesh(gl);
   var radius = 1;
   var vertexPositionData = [];
-  var indexData = []; // Calculate sphere vertex positions
+  var indexData = [];
 
   for (var latNumber = 0; latNumber <= horizontalResolution; ++latNumber) {
     var theta = latNumber * Math.PI / horizontalResolution; //half of sphere
@@ -9928,15 +9928,14 @@ function ColoredSphere(gl, horizontalResolution, verticalResolution) {
 
       var sinPhi = Math.sin(phi);
       var cosPhi = Math.cos(phi);
-      var x = cosPhi * sinTheta;
-      var y = cosTheta;
-      var z = sinPhi * sinTheta;
-      vertexPositionData.push(radius * x);
-      vertexPositionData.push(radius * y);
-      vertexPositionData.push(radius * z);
+      var x = radius * cosPhi * sinTheta;
+      var y = radius * cosTheta;
+      var z = radius * sinPhi * sinTheta;
+      vertexPositionData.push(x);
+      vertexPositionData.push(y);
+      vertexPositionData.push(z);
     }
-  } // Calculate sphere indices.
-
+  }
 
   for (var latNumber = 0; latNumber < horizontalResolution; ++latNumber) {
     for (var longNumber = 0; longNumber < verticalResolution; ++longNumber) {
@@ -10248,9 +10247,9 @@ function (_super) {
     this.camera.aspectRatio = this.gl.drawingBufferWidth / this.gl.drawingBufferHeight;
     this.controller = new fly_camera_controller_1.default(this.camera, this.game.input);
     this.controller.movementSensitivity = 0.005;
-    /*this.gl.enable(this.gl.CULL_FACE);
-    this.gl.cullFace(this.gl.BACK);
-    this.gl.frontFace(this.gl.CCW);*/
+    /* this.gl.enable(this.gl.CULL_FACE);
+     this.gl.cullFace(this.gl.BACK);
+     this.gl.frontFace(this.gl.CW);*/
 
     this.gl.enable(this.gl.DEPTH_TEST);
     this.gl.depthFunc(this.gl.LEQUAL);
@@ -10501,56 +10500,16 @@ function (_super) {
     var matPlanet = gl_matrix_1.mat4.clone(parent);
     gl_matrix_1.mat4.translate(matPlanet, matPlanet, [0 + Math.cos(-this.time * system.rotationSpeedAroundParent) * system.distanceFromParent, 0, 0 + Math.sin(-this.time * system.rotationSpeedAroundParent) * system.distanceFromParent]); //X := originX + cos(angle)*radius
 
+    if (system.children) {
+      for (var i = 0; i < system.children.length; i++) {
+        this.drawSystem(matPlanet, system.children[i]);
+      }
+    }
+
     gl_matrix_1.mat4.rotateY(matPlanet, matPlanet, this.time * system.rotationSpeedAroundSelf);
     gl_matrix_1.mat4.scale(matPlanet, matPlanet, [system.scale, system.scale, system.scale]);
     this.drawSphere(matPlanet, system.tint);
-    var childPos = gl_matrix_1.vec3.create();
-    var grandChildPos = gl_matrix_1.vec3.create();
-
-    for (var i = 0; i < system.children.length; i++) {
-      var child = system.children[i];
-      var matChild = gl_matrix_1.mat4.clone(parent);
-      gl_matrix_1.mat4.translate(matChild, matChild, [0 + Math.cos(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent, 0, 0 + Math.sin(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent]); //X := originX + cos(angle)*radius
-
-      gl_matrix_1.mat4.rotateY(matChild, matChild, this.time * child.rotationSpeedAroundSelf);
-      gl_matrix_1.mat4.scale(matChild, matChild, [child.scale, child.scale, child.scale]);
-      childPos[0] = 0 + Math.cos(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent;
-      childPos[1] = 0;
-      childPos[2] = 0 + Math.sin(-this.time * child.rotationSpeedAroundParent) * child.distanceFromParent; //console.log(childPos);
-
-      this.drawSphere(matChild, child.tint);
-
-      if (child.children != undefined) {
-        for (var j = 0; j < child.children.length; j++) {
-          var grandChild = child.children[j];
-          var matGrandChild = gl_matrix_1.mat4.clone(parent);
-          gl_matrix_1.mat4.translate(matGrandChild, matGrandChild, [childPos[0] + Math.cos(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent, 0, childPos[2] + Math.sin(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent]); //X := originX + cos(angle)*radius
-
-          gl_matrix_1.mat4.rotateY(matGrandChild, matGrandChild, this.time * grandChild.rotationSpeedAroundSelf);
-          gl_matrix_1.mat4.scale(matGrandChild, matGrandChild, [grandChild.scale, grandChild.scale, grandChild.scale]);
-          grandChildPos[0] = childPos[0] + Math.cos(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
-          grandChildPos[1] = 0;
-          grandChildPos[2] = childPos[2] + Math.sin(-this.time * grandChild.rotationSpeedAroundParent) * grandChild.distanceFromParent;
-          this.drawSphere(matGrandChild, grandChild.tint);
-
-          if (grandChild.children != undefined) {
-            for (var k = 0; k < grandChild.children.length; k++) {
-              var grandGrandChild = grandChild.children[k];
-              var matGrandGrandChild = gl_matrix_1.mat4.clone(parent);
-              gl_matrix_1.mat4.translate(matGrandGrandChild, matGrandGrandChild, [grandChildPos[0] + Math.cos(-this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent, 0, grandChildPos[2] + Math.sin(-this.time * grandGrandChild.rotationSpeedAroundParent) * grandGrandChild.distanceFromParent]); //X := originX + cos(angle)*radius
-
-              gl_matrix_1.mat4.rotateY(matGrandGrandChild, matGrandGrandChild, this.time * grandGrandChild.rotationSpeedAroundSelf);
-              gl_matrix_1.mat4.scale(matGrandGrandChild, matGrandGrandChild, [grandGrandChild.scale, grandGrandChild.scale, grandGrandChild.scale]);
-              this.drawSphere(matGrandGrandChild, grandGrandChild.tint);
-            }
-          }
-        }
-      } //}
-
-
-      if (system.children) console.log("This object has " + system.children.length + " " + (system.children.length == 1 ? "child" : "children"));
-    } // Given an MVP and a tint matrix, it draws a sphere
-
+    if (system.children) console.log("This object has " + system.children.length + " " + (system.children.length == 1 ? "child" : "children"));
   }; // Given an MVP and a tint matrix, it draws a sphere
 
 
@@ -10771,7 +10730,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49368" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55257" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

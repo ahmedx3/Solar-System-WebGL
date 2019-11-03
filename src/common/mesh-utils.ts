@@ -190,7 +190,6 @@ export function ColoredSphere(gl: WebGL2RenderingContext, horizontalResolution: 
     let vertexPositionData = [];
     let indexData = [];
 
-    // Calculate sphere vertex positions
     for (let latNumber = 0; latNumber <= horizontalResolution; ++latNumber) {
       let theta = latNumber * Math.PI / horizontalResolution;                   //half of sphere
       let sinTheta = Math.sin(theta);
@@ -201,18 +200,17 @@ export function ColoredSphere(gl: WebGL2RenderingContext, horizontalResolution: 
         let sinPhi = Math.sin(phi);
         let cosPhi = Math.cos(phi);
 
-        let x = cosPhi * sinTheta;
-        let y = cosTheta;
-        let z = sinPhi * sinTheta;
+        let x = radius * cosPhi * sinTheta;
+        let y = radius * cosTheta;
+        let z = radius * sinPhi * sinTheta;
 
-        vertexPositionData.push(radius * x);
-        vertexPositionData.push(radius * y);
-        vertexPositionData.push(radius * z);
+        vertexPositionData.push(x);
+        vertexPositionData.push(y);
+        vertexPositionData.push(z);
 
       }
     }
 
-    // Calculate sphere indices.
     for (let latNumber = 0; latNumber < horizontalResolution; ++latNumber) {
       for (let longNumber = 0; longNumber < verticalResolution; ++longNumber) {
         let first = (latNumber * (verticalResolution + 1)) + longNumber;
