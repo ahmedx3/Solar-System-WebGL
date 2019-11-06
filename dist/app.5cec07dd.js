@@ -9917,19 +9917,19 @@ function ColoredSphere(gl, horizontalResolution, verticalResolution) {
   var vertexPositionData = [];
   var indexData = [];
 
-  for (var latNumber = 0; latNumber <= horizontalResolution; ++latNumber) {
-    var theta = latNumber * Math.PI / horizontalResolution; //half of sphere
+  for (var i = 0; i <= horizontalResolution; ++i) {
+    var Phi = i * Math.PI / horizontalResolution; //half of sphere
 
-    var sinTheta = Math.sin(theta);
-    var cosTheta = Math.cos(theta);
+    var sinPhi = Math.sin(Phi);
+    var cosPhi = Math.cos(Phi);
 
-    for (var longNumber = 0; longNumber <= verticalResolution; ++longNumber) {
-      var phi = longNumber * 2 * Math.PI / verticalResolution; //full sphere
+    for (var j = 0; j <= verticalResolution; ++j) {
+      var Theta = j * 2 * Math.PI / verticalResolution; //full sphere
 
-      var sinPhi = Math.sin(phi);
-      var cosPhi = Math.cos(phi);
-      var x = radius * cosPhi * sinTheta;
-      var y = radius * cosTheta;
+      var sinTheta = Math.sin(Theta);
+      var cosTheta = Math.cos(Theta);
+      var x = radius * cosTheta * sinPhi;
+      var y = radius * cosPhi;
       var z = radius * sinPhi * sinTheta;
       vertexPositionData.push(x);
       vertexPositionData.push(y);
@@ -9937,9 +9937,9 @@ function ColoredSphere(gl, horizontalResolution, verticalResolution) {
     }
   }
 
-  for (var latNumber = 0; latNumber < horizontalResolution; ++latNumber) {
-    for (var longNumber = 0; longNumber < verticalResolution; ++longNumber) {
-      var first = latNumber * (verticalResolution + 1) + longNumber;
+  for (var i = 0; i < horizontalResolution; ++i) {
+    for (var j = 0; j < verticalResolution; ++j) {
+      var first = i * (verticalResolution + 1) + j;
       var second = first + verticalResolution + 1;
       indexData.push(first);
       indexData.push(second);
@@ -10224,19 +10224,19 @@ function (_super) {
     var _a; // These shaders take 2 uniform: MVP for 3D transformation and Tint for modifying colors
 
 
-    this.game.loader.load((_a = {}, _a["sphere.vert"] = {
-      url: 'shaders/sphere.vert',
+    this.game.loader.load((_a = {}, _a["color.vert"] = {
+      url: 'shaders/color.vert',
       type: 'text'
-    }, _a["sphere.frag"] = {
-      url: 'shaders/sphere.frag',
+    }, _a["color.frag"] = {
+      url: 'shaders/color.frag',
       type: 'text'
     }, _a));
   };
 
   SphereScene.prototype.start = function () {
     this.program = new shader_program_1.default(this.gl);
-    this.program.attach(this.game.loader.resources["sphere.vert"], this.gl.VERTEX_SHADER);
-    this.program.attach(this.game.loader.resources["sphere.frag"], this.gl.FRAGMENT_SHADER);
+    this.program.attach(this.game.loader.resources["color.vert"], this.gl.VERTEX_SHADER);
+    this.program.attach(this.game.loader.resources["color.frag"], this.gl.FRAGMENT_SHADER);
     this.program.link(); // Create a colored rectangle using our new Mesh class
 
     this.mesh = MeshUtils.ColoredSphere(this.gl, this.verticalResolution, this.horizontalResolution);
@@ -10730,7 +10730,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55257" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54313" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

@@ -190,18 +190,18 @@ export function ColoredSphere(gl: WebGL2RenderingContext, horizontalResolution: 
     let vertexPositionData = [];
     let indexData = [];
 
-    for (let latNumber = 0; latNumber <= horizontalResolution; ++latNumber) {
-      let theta = latNumber * Math.PI / horizontalResolution;                   //half of sphere
-      let sinTheta = Math.sin(theta);
-      let cosTheta = Math.cos(theta);
+    for (let i = 0; i <= horizontalResolution; ++i) {
+      let Phi = i * Math.PI / horizontalResolution;                   //half of sphere
+      let sinPhi = Math.sin(Phi);
+      let cosPhi = Math.cos(Phi);
 
-      for (let longNumber = 0; longNumber <= verticalResolution; ++longNumber) {
-        let phi = longNumber * 2 * Math.PI / verticalResolution;                //full sphere
-        let sinPhi = Math.sin(phi);
-        let cosPhi = Math.cos(phi);
+      for (let j = 0; j <= verticalResolution; ++j) {
+        let Theta = j * 2 * Math.PI / verticalResolution;                //full sphere
+        let sinTheta = Math.sin(Theta);
+        let cosTheta = Math.cos(Theta);
 
-        let x = radius * cosPhi * sinTheta;
-        let y = radius * cosTheta;
+        let x = radius * cosTheta * sinPhi;
+        let y = radius * cosPhi;
         let z = radius * sinPhi * sinTheta;
 
         vertexPositionData.push(x);
@@ -211,9 +211,9 @@ export function ColoredSphere(gl: WebGL2RenderingContext, horizontalResolution: 
       }
     }
 
-    for (let latNumber = 0; latNumber < horizontalResolution; ++latNumber) {
-      for (let longNumber = 0; longNumber < verticalResolution; ++longNumber) {
-        let first = (latNumber * (verticalResolution + 1)) + longNumber;
+    for (let i = 0; i < horizontalResolution; ++i) {
+      for (let j = 0; j < verticalResolution; ++j) {
+        let first = (i * (verticalResolution + 1)) + j;
         let second = first + verticalResolution + 1;
 
         indexData.push(first);
